@@ -7,6 +7,7 @@ from flask import Flask, request, jsonify
 from PIL import Image
 import io
 import pandas as pd
+import os
 
 # Step 1: Define the model architecture (Must match the trained model)
 model = models.resnet50(pretrained=False)
@@ -66,4 +67,5 @@ def predict():
     return jsonify({"flower": flower_name})
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
