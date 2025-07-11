@@ -1,2 +1,12 @@
 examples
 .ipynb
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+
+# IDE / Editor specific
+.vscode/
+.idea/
