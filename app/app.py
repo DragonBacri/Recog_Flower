@@ -14,12 +14,12 @@ model = models.resnet50(pretrained=False)
 model.fc = torch.nn.Linear(in_features=2048, out_features=102)  # Ensure output matches 102 classes
 
 # Step 2: Load the fine-tuned model weights
-model_path = "fine_tuned_resnet50.pth"  # Ensure the file is in the correct directory
+model_path = "model/fine_tuned_resnet50.pth"  # Ensure the file is in the correct directory
 model.load_state_dict(torch.load(model_path, map_location=torch.device("cpu")))
 
 # Step 3: Set model to evaluation mode
 model.eval()
-df_labels = pd.read_csv('labels.csv')
+df_labels = pd.read_csv('data/labels.csv')
 print("model ok")
 
 
