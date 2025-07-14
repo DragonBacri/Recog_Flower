@@ -1,29 +1,36 @@
 steps:
   # Étape 1: Construire l'image Docker
-  # On utilise le "short SHA" (l'identifiant court du commit git) pour versionner chaque image.
+  # On utilise le nom de la branche et le "short SHA" pour versionner l'image.
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
       - '-t'
-      - 'europe-west9-docker.pkg.dev/$PROJECT_ID/flower-app-images/back-flower-app:$SHORT_SHA'
+      - 'europe-west9-docker.pkg.dev/$PROJECT_ID/flower-app-images/back-flower-app:$BRANCH_NAME-$SHORT_SHA'
       - '.'
 
   # Étape 2: Pousser (envoyer) l'image vers Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'europe-west9-docker.pkg.dev/$PROJECT_ID/flower-app-images/back-flower-app:$SHORT_SHA']
+    args: ['push', 'europe-west9-docker.pkg.dev/$PROJECT_ID/flower-app-images/back-flower-app:$BRANCH_NAME-$SHORT_SHA']
 
   # Étape 3: Déployer la nouvelle image sur Cloud Run
+  # Le nom du service est défini par la variable de substitution _SERVICE_NAME
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
       - 'run'
       - 'deploy'
-      - 'back-flower-app' # Le nom de votre service Cloud Run
-      - '--image=europe-west9-docker.pkg.dev/$PROJECT_ID/flower-app-images/back-flower-app:$SHORT_SHA'
+      - '${_SERVICE_NAME}' # Le nom du service est maintenant une variable
+      - '--image=europe-west9-docker.pkg.dev/$PROJECT_ID/flower-app-images/back-flower-app:$BRANCH_NAME-$SHORT_SHA'
       - '--region=europe-west9'
       - '--memory=2Gi' # On conserve l'allocation de mémoire
       - '--platform=managed'
+      # Décommentez la ligne suivante si votre service doit être accessible publiquement
+      # - '--allow-unauthenticated'
 
+# On peut définir des variables de substitution par défaut ici.
+# Utile si vous lancez le build manuellement.
+substitutions:
+  _SERVICE_NAME: 'back-flower-app-dev'
 
 options:
   logging: CLOUD_LOGGING_ONLY
