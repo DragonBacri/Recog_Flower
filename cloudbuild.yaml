@@ -25,7 +25,7 @@ steps:
       - '--memory=2Gi' # On conserve l'allocation de mémoire
       - '--platform=managed'
       # Décommentez la ligne suivante si votre service doit être accessible publiquement
-      # - '--allow-unauthenticated'
+      - '--allow-unauthenticated'
 
 # On peut définir des variables de substitution par défaut ici.
 # Utile si vous lancez le build manuellement.
