@@ -1,5 +1,6 @@
 examples
 .ipynb
+test*
 # Python
 __pycache__/
 *.pyc

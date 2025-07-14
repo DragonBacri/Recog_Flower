@@ -3,12 +3,7 @@ import torchvision.models as models
 from PIL import Image
 import torchvision.transforms as transforms
 
-from flask import Flask, request, jsonify
-from PIL import Image
-import io
 import pandas as pd
-import os
-
 # Step 1: Define the model architecture (Must match the trained model)
 model = models.resnet50(pretrained=False)
 model.fc = torch.nn.Linear(in_features=2048, out_features=102)  # Ensure output matches 102 classes
@@ -22,10 +17,6 @@ model.eval()
 df_labels = pd.read_csv('data/labels.csv')
 print("model ok")
 
-
-app = Flask(__name__)
-
-# Fonction factice pour reconnaître une fleur
 def recognize_flower(image):
     # Load the image
     #image_path = image # Replace with your test image
@@ -57,22 +48,6 @@ def recognize_flower(image):
 
     return top3_Flower
 
-@app.route("/predict", methods=["POST"])
-def predict():
-    if "image" not in request.files:
-        return jsonify({"error": "No image provided"}), 400
 
-    image = request.files["image"]
-    image = Image.open(io.BytesIO(image.read())).convert("RGB")
-
-    flower_name = recognize_flower(image)
-
-    return jsonify({"flower": flower_name})
-
-@app.route("/health", methods=["GET"])
-def health():
-    return jsonify({"status": "healthy"})
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug= False)
+with open("examples/rose.jpg", "rb") as img_file:
+    print(recognize_flower(Image.open(img_file)))
