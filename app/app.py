@@ -2,13 +2,20 @@ import torch
 import torchvision.models as models
 from PIL import Image
 import torchvision.transforms as transforms
-
+import google.auth
+from google.cloud import storage
+from google.auth.exceptions import DefaultCredentialsError
 from flask import Flask, request, jsonify
 from PIL import Image
 import io
 import pandas as pd
+import sys
 import os
 
+# Always add the parent of this file's directory
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from db_engine import get_engine
 # Step 1: Define the model architecture (Must match the trained model)
 model = models.resnet50(pretrained=False)
 model.fc = torch.nn.Linear(in_features=2048, out_features=102)  # Ensure output matches 102 classes
@@ -22,6 +29,27 @@ model.eval()
 df_labels = pd.read_csv('data/labels.csv')
 print("model ok")
 
+#Step 4 : Mandatory on local (but i need to auth before) and on Google cloud run
+try:
+        # The client library constructor calls google.auth.default() under the hood.
+        # This is the recommended and most common way to authenticate.
+        storage_client = storage.Client()
+
+        # If you wanted to get the credentials and project ID explicitly, you could:
+        # credentials, project_id = google.auth.default()
+        # storage_client = storage.Client(credentials=credentials, project=project_id)
+
+        print(f"Successfully authenticated using project: {storage_client.project}")
+
+except DefaultCredentialsError:
+    print(
+        "Authentication failed. Please run 'gcloud auth application-default login' "
+        "in your terminal to configure your credentials."
+    )
+
+#get labels from database
+engine = get_engine()
+df_labels = pd.read_sql("SELECT  * from dbo.dim_flower", engine)
 
 app = Flask(__name__)
 
