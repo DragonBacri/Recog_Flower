@@ -13,7 +13,7 @@ import sys
 import os
 
 # Always add the parent of this file's directory
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+#sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from db_engine import get_engine
 # Step 1: Define the model architecture (Must match the trained model)

@@ -6,3 +6,5 @@ pandas
 gunicorn==20.1.0
 pytest==6.2.4
 numpy==1.26.2
+sqlalchemy
+google
