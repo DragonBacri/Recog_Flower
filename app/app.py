@@ -2,14 +2,13 @@ import torch
 import torchvision.models as models
 from PIL import Image
 import torchvision.transforms as transforms
-import google.auth
 from google.cloud import storage
 from google.auth.exceptions import DefaultCredentialsError
 from flask import Flask, request, jsonify
 from PIL import Image
 import io
 import pandas as pd
-import sys
+
 import os
 
 # Always add the parent of this file's directory
