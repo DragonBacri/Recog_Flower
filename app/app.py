@@ -8,13 +8,15 @@ from flask import Flask, request, jsonify
 from PIL import Image
 import io
 import pandas as pd
+from datetime import datetime
 
 import os
 
 # Always add the parent of this file's directory
 #sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from db_engine import get_engine
+from db_engine import get_engine, add_pred_history
+
 # Step 1: Define the model architecture (Must match the trained model)
 model = models.resnet50(pretrained=False)
 model.fc = torch.nn.Linear(in_features=2048, out_features=102)  # Ensure output matches 102 classes
@@ -78,6 +80,11 @@ def recognize_flower(image):
 
    # Get the class indices from the tensor
     top3_indices = top3_classes.tolist()[0]
+
+    #add pred to history
+    for i in top3_indices:
+        today = datetime.now()
+        add_pred_history(engine, i, today)
     
     # Look up the flower names in order
     top3_Flower = [df_labels.loc[df_labels['id'] == i, 'Flower'].iloc[0] for i in top3_indices]

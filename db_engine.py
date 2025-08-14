@@ -1,6 +1,7 @@
 import os
 from google.cloud.sql.connector import Connector
 import sqlalchemy
+from sqlalchemy import  text
 
 
 ### --- Configuration ---
@@ -41,3 +42,17 @@ def get_engine():
         creator= get_conn,
     )
     return engine
+
+def add_pred_history(engine, pred_id, today) :
+    insert_query = text("""
+    INSERT INTO fact_history_predicts (flower_id, date) 
+    VALUES ( :flower_id, :date_val)
+    """)
+    params = { 
+        "flower_id": pred_id, 
+        "date_val": today  # Pass the raw datetime object here
+    }
+    with engine.connect() as connection:
+        # The transaction ensures the table creation is atomic
+        with connection.begin() as transaction:
+            connection.execute(insert_query,params)

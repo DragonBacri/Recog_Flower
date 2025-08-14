@@ -11,3 +11,4 @@ google
 google-cloud-storage
 cloud-sql-python-connector[pytds]
 sqlalchemy-pytds==0.3.5
+datetime
