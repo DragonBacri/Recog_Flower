@@ -83,7 +83,12 @@ def recognize_flower(image):
     # Look up the flower names in order
     top3_Flower = [df_labels.loc[df_labels['id'] == i, 'Flower'].iloc[0] for i in top3_indices]
 
-    return top3_Flower
+    top3_Image = [ df_labels.loc[df_labels['id'] == i, 'image_name'].iloc[0] for i in top3_indices]
+    
+
+    top3_link = ["https://storage.googleapis.com/flower_images_fluffy/" + x for x in top3_Image if type(x) == str]
+
+    return top3_Flower, top3_link
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -93,9 +98,10 @@ def predict():
     image = request.files["image"]
     image = Image.open(io.BytesIO(image.read())).convert("RGB")
 
-    flower_name = recognize_flower(image)
+    flowers_name, flowers_link = recognize_flower(image)
 
-    return jsonify({"flower": flower_name})
+    return jsonify({"flower": flowers_name,
+                    "image": flowers_link})
 
 @app.route("/health", methods=["GET"])
 def health():
